@@ -1,0 +1,7 @@
+写入协议：
+    控件数量ViewNumber
+    控件对象数据ViewSaveBean
+
+读取协议:
+    控件数量ViewNumber
+    控件对象数据ViewSaveBean

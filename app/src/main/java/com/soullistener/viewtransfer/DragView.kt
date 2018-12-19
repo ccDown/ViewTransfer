@@ -13,7 +13,8 @@ import android.widget.LinearLayout
  * @author kuan
  * Created on 2018/3/21.
  */
-class DragView(context: Context) : LinearLayout(context) {
+class DragView(context: Context,attrs: AttributeSet) : LinearLayout(context,attrs) {
+
 
     fun change(): Unit {
         Log.e("TAG","asd")
@@ -25,7 +26,8 @@ class DragView(context: Context) : LinearLayout(context) {
     private var viewDragHelper :ViewDragHelper? = null
     private var mViewDragLeft :Int? = null
     private var mViewDragTop :Int? = null
-    constructor(context: Context, attrs: AttributeSet):this(context){
+
+    init {
 
         viewDragHelper = ViewDragHelper.create(this, 1.0f, object : ViewDragHelper.Callback() {
             override fun clampViewPositionHorizontal(child: View, left: Int, dx: Int): Int {
@@ -65,7 +67,8 @@ class DragView(context: Context) : LinearLayout(context) {
 //                if (child is CircleView) {
 //                    return true
 //                }
-                return true
+
+                return canMoved
             }
 
             /**
@@ -98,6 +101,7 @@ class DragView(context: Context) : LinearLayout(context) {
         })
     }
 
+
     override fun computeScroll() {
         super.computeScroll()
 
@@ -125,6 +129,12 @@ class DragView(context: Context) : LinearLayout(context) {
 
     public fun canTouch(touched: Boolean): Unit {
         canTouched = touched
+    }
+
+    /*可移动*/
+    public var canMoved = true
+    public fun canMoved(moved: Boolean): Unit {
+        canMoved = moved
     }
 
 

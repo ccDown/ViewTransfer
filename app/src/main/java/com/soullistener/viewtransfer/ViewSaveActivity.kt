@@ -40,7 +40,9 @@ class ViewSaveActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
 
             val file = File(Environment.getExternalStorageDirectory(),"viewsave.txt")
 
-            val viewList = ViewTransUtils.getAllChildViews(ll_viewrestore)
+            val viewroot = findViewById<DragView>(R.id.ll_viewsave)
+
+            val viewList = ViewTransUtils.getAllChildViews(viewroot)
             val list = ViewTransUtils.viewTrans2Bean(viewList)
             val isSuccessed = ViewTransUtils.bean2File(file,list)
 

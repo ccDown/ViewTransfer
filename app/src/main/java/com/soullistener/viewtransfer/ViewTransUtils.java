@@ -36,6 +36,7 @@ public class ViewTransUtils {
             ViewGroup viewGroup = (ViewGroup) parentView;
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 View childView = viewGroup.getChildAt(i);
+                Log.e("getAllChildViews", "getAllChildViews: "+childView.getClass().getName());
                 arrayList.add(childView);
                 arrayList.addAll(getAllChildViews(childView));
             }
@@ -73,6 +74,8 @@ public class ViewTransUtils {
 
             ViewSaveBean.ViewInfo  viewInfo = new ViewSaveBean.ViewInfo(x,y,width,height);
             ViewSaveBean viewSaveBean = new ViewSaveBean(name,content,viewInfo);
+            Log.e("viewTrans2Bean", "viewSaveBean: "+viewSaveBean.toString());
+
             list.add(viewSaveBean);
         }
 

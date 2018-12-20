@@ -1,4 +1,4 @@
-package com.soullistener.viewtransfer
+package com.soullistener.viewtransfer.widget
 
 import android.content.Context
 import android.support.v4.widget.ViewDragHelper
@@ -9,7 +9,7 @@ import android.view.View
 import android.widget.LinearLayout
 
 /**
- * @description
+ * @description 实现子view的滑动
  * @author kuan
  * Created on 2018/3/21.
  */
@@ -76,7 +76,7 @@ class DragView(context: Context,attrs: AttributeSet) : LinearLayout(context,attr
              */
             override fun onViewCaptured(capturedChild: View, activePointerId: Int) {
                 super.onViewCaptured(capturedChild, activePointerId)
-                mViewDragLeft = capturedChild!!.left
+                mViewDragLeft = capturedChild.left
                 mViewDragTop = capturedChild.top
             }
 

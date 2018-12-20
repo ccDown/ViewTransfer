@@ -3,6 +3,7 @@ package com.soullistener.viewtransfer
 import android.os.Bundle
 import android.os.Environment
 import android.support.v7.app.AppCompatActivity
+import com.soullistener.viewtransfer.utils.ViewTransUtils
 import kotlinx.android.synthetic.main.activity_viewrestore.*
 import java.io.File
 

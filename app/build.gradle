@@ -31,5 +31,20 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
+    //Permission
     implementation 'pub.devrel:easypermissions:2.0.0'
+
+    //Logger
+    implementation 'com.orhanobut:logger:2.2.0'
+
+    //Rxjava RxAndroid
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.4'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.5.2'
+//    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.2'
 }

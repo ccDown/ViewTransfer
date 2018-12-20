@@ -5,7 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.support.v7.app.AppCompatActivity
-import android.widget.Toast
+import com.soullistener.viewtransfer.utils.ToastUtils
+import com.soullistener.viewtransfer.utils.ViewTransUtils
+import com.soullistener.viewtransfer.widget.DragView
 import kotlinx.android.synthetic.main.activity_viewsave.*
 import pub.devrel.easypermissions.EasyPermissions
 import java.io.File
@@ -34,7 +36,7 @@ class ViewSaveActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
         textview.setOnClickListener {
 
             if (!permission){
-                Toast.makeText(this@ViewSaveActivity,"未获取权限",Toast.LENGTH_SHORT).show()
+                ToastUtils.showShort("未获取权限")
                 return@setOnClickListener
             }
 
@@ -50,7 +52,7 @@ class ViewSaveActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
                 val intent = Intent(this@ViewSaveActivity, ViewRestoreAvtivity::class.java)
                 startActivity(intent)
             } else {
-                Toast.makeText(this, "写入文件失败", Toast.LENGTH_SHORT).show()
+                ToastUtils.showShort("写入文件失败")
             }
         }
     }

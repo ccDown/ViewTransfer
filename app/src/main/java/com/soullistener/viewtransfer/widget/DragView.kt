@@ -13,8 +13,9 @@ import android.widget.LinearLayout
  * @author kuan
  * Created on 2018/3/21.
  */
-class DragView(context: Context,attrs: AttributeSet) : LinearLayout(context,attrs) {
+class DragView(context: Context,attrs: AttributeSet ?= null) : LinearLayout(context,attrs) {
 
+    constructor(context: Context) : this(context,null)
 
     fun change(): Unit {
         Log.e("TAG","asd")

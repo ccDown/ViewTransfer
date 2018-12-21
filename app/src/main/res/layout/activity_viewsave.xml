@@ -8,17 +8,17 @@
         
     <Button
 		    android:background="@color/colorAccent"
-		    android:layout_margin="50dp"
 		    android:text="点击我进入下个界面"
 		    android:id="@+id/textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 	
-	<TextView
+	<Button
 			android:text="阿斯顿撒大所"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"/>
-	<LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content">
-		<TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="爱仕达多"/>
-	</LinearLayout>
+		<Button
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="爱仕达多"/>
 </com.soullistener.viewtransfer.widget.DragView>

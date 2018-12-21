@@ -11,8 +11,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.orhanobut.logger.Logger;
-import com.soullistener.viewtransfer.model.ViewNumber;
 import com.soullistener.viewtransfer.model.ViewSaveBean;
+import com.soullistener.viewtransfer.model.ViewTreeBean;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
@@ -31,82 +31,87 @@ public class ViewTransUtils {
 
     /**
      * 通过递归获取全部的子view
+     *
      * @param parentView
      * @return
      */
-    public static ArrayList<View> getAllChildViews(View parentView){
-        ArrayList<View> arrayList = new ArrayList();
+    public static ViewTreeBean rootViewToViewTreeBean(View parentView) {
 
-        if (parentView instanceof  ViewGroup) {
+        ArrayList<ViewTreeBean> viewTreeBeanArrayList = new ArrayList();
+        //设置本view的信息
+        ViewSaveBean viewSaveBean = viewTransBean(parentView);
+        ViewTreeBean viewTreeBean = new ViewTreeBean();
+        viewTreeBean.setViewSaveBean(viewSaveBean);
+
+        if (parentView instanceof ViewGroup) {
+
+            //对本view的子view进行遍历获取自view的信息并赋值给父view
             ViewGroup viewGroup = (ViewGroup) parentView;
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 View childView = viewGroup.getChildAt(i);
-                arrayList.add(childView);
-                arrayList.addAll(getAllChildViews(childView));
-            }
-        }
 
-        return arrayList;
+                //遍历子view的
+                ViewTreeBean childViewTreeBean = rootViewToViewTreeBean(childView);
+                viewTreeBeanArrayList.add(childViewTreeBean);
+
+            }
+            //设置本view的子view信息
+            viewTreeBean.setViewTreeBeans(viewTreeBeanArrayList);
+        }
+        return viewTreeBean;
     }
 
     /**
-     * 将View转换为Bean对象
-     * @param viewList
+     * 将view信息转换为ViewSaveBean
+     *
+     * @param childView
      * @return
      */
-    public static ArrayList<ViewSaveBean> viewTrans2Bean(ArrayList<View> viewList) {
+    public static ViewSaveBean viewTransBean(View childView) {
+        //通过反射获取控件名称
+        String content = "";
+        if (childView instanceof ViewGroup) {
 
-        ArrayList<ViewSaveBean> list = new ArrayList<>();
-
-        for (View childView : viewList) {
-
-            //通过反射获取控件名称
-            String content = "";
-            if (childView instanceof ViewGroup){
-
-            } else {
-                //非view不能转换为TextView
-                content = ((TextView)childView).getText().toString();
-            }
-
-            String name = childView.getClass().getName();
-
-
-            //获取宽、高
-            int[] pxwh = getWH(childView);
-            int pxWidth = pxwh[0];
-            int pxHeight = pxwh[1];
-
-            //获取坐标
-            int[] locations = getXY(childView);
-            int x = locations[0];
-            int y = locations[1];
-
-            int dpWidth = ViewUnitConventUtils.px2dp(pxWidth);
-            int dpHeight = ViewUnitConventUtils.px2dp(pxHeight);
-
-            int backColor = -1;
-
-            String backImage = "";
-
-            ViewSaveBean.ViewInfo  viewInfo = new ViewSaveBean.ViewInfo(x,y,dpWidth,dpHeight);
-            ViewSaveBean.ViewContent viewContent = new ViewSaveBean.ViewContent(name,content);
-            ViewSaveBean.ViewResource viewResource = new ViewSaveBean.ViewResource(backColor,backImage);
-            ViewSaveBean viewSaveBean = new ViewSaveBean(viewContent,viewResource,viewInfo);
-            Logger.i( "viewSaveBean: "+viewSaveBean.toString());
-
-            list.add(viewSaveBean);
+        } else {
+            //非view不能转换为TextView
+            content = ((TextView) childView).getText().toString();
         }
 
-        return list;
+        String name = childView.getClass().getName();
+
+
+        //获取宽、高
+        int[] pxwh = getWH(childView);
+        int pxWidth = pxwh[0];
+        int pxHeight = pxwh[1];
+
+        //获取坐标
+        int[] locations = getXY(childView);
+        int x = locations[0];
+        int y = locations[1];
+
+        int dpWidth = ViewUnitConventUtils.px2dp(pxWidth);
+        int dpHeight = ViewUnitConventUtils.px2dp(pxHeight);
+
+        int backColor = -1;
+
+        String backImage = "";
+
+        ViewSaveBean.ViewInfo viewInfo = new ViewSaveBean.ViewInfo(x, y, dpWidth, dpHeight);
+        ViewSaveBean.ViewContent viewContent = new ViewSaveBean.ViewContent(name, content);
+        ViewSaveBean.ViewResource viewResource = new ViewSaveBean.ViewResource(backColor, backImage);
+        ViewSaveBean viewSaveBean = new ViewSaveBean(viewContent, viewResource, viewInfo);
+        return viewSaveBean;
     }
 
     /**
      * Bean输出到文件中进行保存
-     * @param list
+     *
+     * @param file
+     * @param viewTreeBean
      * @return
      */
-    public static boolean bean2File(File file,ArrayList<ViewSaveBean> list){
+    public static boolean bean2File(File file, ViewTreeBean viewTreeBean) {
         if (!file.exists()) {
             try {
                 file.createNewFile();
@@ -119,13 +124,8 @@ public class ViewTransUtils {
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(file));
 
-            ViewNumber viewNumber = new ViewNumber(list.size());
-            objectOutputStream.writeObject(viewNumber);
-
-            for (ViewSaveBean viewSaveBean : list) {
-                Logger.i( "bean2File: "+viewSaveBean.toString());
-                objectOutputStream.writeObject(viewSaveBean);
-            }
+            Logger.i("bean2File: " + viewTreeBean.toString());
+            objectOutputStream.writeObject(viewTreeBean);
 
             objectOutputStream.flush();
             objectOutputStream.close();
@@ -140,25 +140,19 @@ public class ViewTransUtils {
 
     /**
      * 读取文件并转换为Bean
+     *
      * @param file
      * @return
      */
-    public static ArrayList<ViewSaveBean> file2Bean(File file){
-        ArrayList<ViewSaveBean> viewSaveBeanArrayList = new ArrayList<>();
+    public static ViewTreeBean file2Bean(File file) {
+
         try {
             ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
+            ViewTreeBean viewTreeBean = (ViewTreeBean) objectInputStream.readObject();
 
-            ViewNumber viewNumber = (ViewNumber)objectInputStream.readObject();
-            int number = viewNumber.getNumber();
+            Logger.i("file2Bean: " + viewTreeBean.toString());
 
-            for (int i = 0; i < number; i++) {
-                ViewSaveBean viewSaveBean = (ViewSaveBean) objectInputStream.readObject();
-                Logger.i( "file2Bean: "+viewSaveBean.toString());
-
-                viewSaveBeanArrayList.add(viewSaveBean);
-            }
-
-            return viewSaveBeanArrayList;
+            return viewTreeBean;
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -175,6 +169,7 @@ public class ViewTransUtils {
 
     /**
      * 根据控件名称生成实体控件
+     *
      * @param context
      * @param name
      * @return
@@ -196,55 +191,80 @@ public class ViewTransUtils {
             e.printStackTrace();
         }
 
-
         return null;
     }
+
     /**
-     * 将Bean转换为View
-     * @param viewSaveBeans
-     * @return
+     * 根布局添加ViewTreeBean转换为的view
+     *
+     * @param parentView    父控件
+     * @param viewTreeBeans
      */
-    public static ArrayList<View> bean2ViewTrans(Context context,ArrayList<ViewSaveBean> viewSaveBeans){
-        ArrayList<View> views = new ArrayList<>();
+    public static View viewTreeBeanAdded(ViewGroup parentView, ViewTreeBean viewTreeBeans) {
+        Context context = parentView.getContext();
 
-        for (ViewSaveBean viewSaveBean : viewSaveBeans){
-            View view = ViewTransUtils.viewTransfer(context,viewSaveBean.getViewContent().getName());
-            view.setX(viewSaveBean.getViewInfo().getX());
-            view.setY(viewSaveBean.getViewInfo().getY());
+        //本view
+        View view = beanTransView(context, viewTreeBeans.getViewSaveBean());
+        ArrayList<ViewTreeBean> childTreeBeans = viewTreeBeans.getViewTreeBeans();
 
-            int dpWidth = viewSaveBean.getViewInfo().getWidth();
-            int dpHeight = viewSaveBean.getViewInfo().getHeight();
+        //如果是ViewGroup进行遍历添加view
+        if (view instanceof ViewGroup) {
+            //获取子view结构
+            for (ViewTreeBean viewTreeBean : childTreeBeans) {
 
-            int pxWidth = ViewUnitConventUtils.dp2px(dpWidth);
-            int pxHeight = ViewUnitConventUtils.dp2px(dpHeight);
-            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    pxWidth,
-                    pxHeight);
-            view.setLayoutParams(params);
-
-            int backColor = viewSaveBean.getViewResource().getBackColor();
-
-            if (-1 != backColor){
-                view.setBackgroundColor(Color.parseColor("#"+backColor));
+                viewTreeBeanAdded((ViewGroup) view, viewTreeBean);
             }
-
-            String backImage = viewSaveBean.getViewResource().getBackImage();
-            if (!TextUtils.isEmpty(backImage)){
-                view.setBackgroundColor(Color.parseColor(backImage));
-            }
-            String text = viewSaveBean.getViewContent().getContent();
-            if (!TextUtils.isEmpty(text)){
-                ((TextView)view ).setText(text);
-            }
-
-            views.add(view);
         }
-        return views;
+
+        parentView.addView(view);
+
+        return parentView;
     }
 
+    /**
+     * ViewSaveBean转换为View
+     *
+     * @param context
+     * @param viewSaveBean
+     * @return
+     */
+    public static View beanTransView(Context context, ViewSaveBean viewSaveBean) {
+        View view = ViewTransUtils.viewTransfer(context, viewSaveBean.getViewContent().getName());
+
+        view.setX(viewSaveBean.getViewInfo().getX());
+        view.setY(viewSaveBean.getViewInfo().getY());
+
+        int dpWidth = viewSaveBean.getViewInfo().getWidth();
+        int dpHeight = viewSaveBean.getViewInfo().getHeight();
+
+        int pxWidth = ViewUnitConventUtils.dp2px(dpWidth);
+        int pxHeight = ViewUnitConventUtils.dp2px(dpHeight);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                pxWidth,
+                pxHeight);
+        view.setLayoutParams(params);
+
+        int backColor = viewSaveBean.getViewResource().getBackColor();
+
+        if (-1 != backColor) {
+            view.setBackgroundColor(Color.parseColor("#" + backColor));
+        }
+
+        String backImage = viewSaveBean.getViewResource().getBackImage();
+        if (!TextUtils.isEmpty(backImage)) {
+            view.setBackgroundColor(Color.parseColor(backImage));
+        }
+        String text = viewSaveBean.getViewContent().getContent();
+        if (!TextUtils.isEmpty(text)) {
+            ((TextView) view).setText(text);
+        }
+
+        return view;
+    }
 
     /**
      * 获取某一点的颜色
+     *
      * @param view
      * @param x
      * @param y
@@ -267,16 +287,17 @@ public class ViewTransUtils {
 //
 //        GBData.reader = imageReader;
 
-        return GBData.getColor(x,y);
+        return GBData.getColor(x, y);
 
     }
 
     /**
      * 获取view坐标
+     *
      * @param view
      * @return
      */
-    public static int[] getXY(View view){
+    public static int[] getXY(View view) {
         //获取坐标
         int[] locations = new int[2];
         view.getLocationOnScreen(locations);
@@ -285,10 +306,11 @@ public class ViewTransUtils {
 
     /**
      * 获取view 宽高
+     *
      * @param view
      * @return
      */
-    public static int[] getWH(View view){
+    public static int[] getWH(View view) {
         int[] wh = new int[2];
         //获取宽、高
         view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),

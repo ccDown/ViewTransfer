@@ -21,9 +21,11 @@ class ViewRestoreAvtivity : AppCompatActivity() {
 
         val file = File(Environment.getExternalStorageDirectory(), "viewsave.txt")
 
-        val viewBeanList =  ViewTransUtils.file2Bean(file)
-        val viewList = ViewTransUtils.bean2ViewTrans(this,viewBeanList)
-        viewList.forEach { ll_viewrestore.addView(it) }
+        val viewTreeBean =  ViewTransUtils.file2Bean(file)
+        ViewTransUtils.viewTreeBeanAdded(ll_viewrestore,viewTreeBean)
+        val viewList = ViewTransUtils.rootViewToViewTreeBean(ll_viewrestore)
+
+        ViewTransUtils.bean2File(file,viewList)
 
     }
 }

@@ -44,9 +44,8 @@ class ViewSaveActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
 
             val viewroot = findViewById<DragView>(R.id.ll_viewsave)
 
-            val viewList = ViewTransUtils.getAllChildViews(viewroot)
-            val list = ViewTransUtils.viewTrans2Bean(viewList)
-            val isSuccessed = ViewTransUtils.bean2File(file,list)
+            val viewList = ViewTransUtils.rootViewToViewTreeBean(viewroot)
+            val isSuccessed = ViewTransUtils.bean2File(file,viewList)
 
             if (isSuccessed) {
                 val intent = Intent(this@ViewSaveActivity, ViewRestoreAvtivity::class.java)

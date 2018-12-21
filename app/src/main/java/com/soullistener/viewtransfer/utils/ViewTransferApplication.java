@@ -51,19 +51,30 @@ public class ViewTransferApplication extends Application {
         Cockroach.install(new ExceptionHandler() {
             @Override
             protected void onUncaughtExceptionHappened(final Thread thread, final Throwable throwable) {
-                throwable.printStackTrace();//打印警告级别log
                 new Handler(Looper.getMainLooper()).post(new Runnable() {
                     @Override
                     public void run() {
                         ToastUtils.showLong("发生错误:"+throwable.getMessage());
+                        Logger.e("发生错误"+throwable.toString());
+                        throwable.printStackTrace();//打印警告级别log
                     }
                 });
             }
 
             @Override
-            protected void onBandageExceptionHappened(Throwable throwable) {
-                throwable.printStackTrace();//打印警告级别log，该throwable可能是最开始的bug导致的，无需关心
-//                ToastUtils.showShort("发生错误，请重新打开软件");
+            protected void onBandageExceptionHappened(final Throwable throwable) {
+                //打印警告级别log，该throwable可能是最开始的bug导致的，无需关心
+                new Handler(Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+//                        ToastUtils.showLong("发生错误:"+throwable.getMessage());
+                        Logger.e("再次发生错误"+throwable.toString());
+                        throwable.printStackTrace();//打印警告级别log
+                    }
+                });
+
+
+                throwable.printStackTrace();
             }
 
             @Override

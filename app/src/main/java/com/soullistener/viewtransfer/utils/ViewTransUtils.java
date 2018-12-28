@@ -93,6 +93,7 @@ public class ViewTransUtils {
         int dpWidth = ViewUnitConventUtils.px2dp(pxWidth);
         int dpHeight = ViewUnitConventUtils.px2dp(pxHeight);
 
+        Logger.e("view---->>>>>bean"+childView.getClass().getName()+","+dpWidth+","+dpHeight+","+x+","+y);
         int backColor = -1;
 
         String backImage = "";
@@ -205,6 +206,11 @@ public class ViewTransUtils {
 
         //本view
         View view = beanTransView(context, viewTreeBeans.getViewSaveBean());
+        if (view instanceof LinearLayout) {
+            ((LinearLayout) view).setOrientation(LinearLayout.VERTICAL);
+            view.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        }
+
         ArrayList<ViewTreeBean> childTreeBeans = viewTreeBeans.getViewTreeBeans();
 
         //如果是ViewGroup进行遍历添加view
@@ -239,9 +245,10 @@ public class ViewTransUtils {
 
         int pxWidth = ViewUnitConventUtils.dp2px(dpWidth);
         int pxHeight = ViewUnitConventUtils.dp2px(dpHeight);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                pxWidth,
-                pxHeight);
+
+        Logger.e("bean---->>>>>view"+view.getClass().getName()+","+dpWidth+","+dpHeight+","+viewSaveBean.getViewInfo().getX()+","+viewSaveBean.getViewInfo().getY());
+
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(pxWidth,pxHeight);
         view.setLayoutParams(params);
 
         int backColor = viewSaveBean.getViewResource().getBackColor();
@@ -312,13 +319,36 @@ public class ViewTransUtils {
      */
     public static int[] getWH(View view) {
         int[] wh = new int[2];
-        //获取宽、高
-        view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        wh[0] = view.getMeasuredWidth();
-        wh[1] = view.getMeasuredHeight();
+        int widthModel = 0;
+        int heightModel = 0;
+        /**
+         * 获取宽、高
+         *
+         * 分别遍历width和height的三种测量模式UNSPECIFIED(未指定)、EXACTLY(完全)、AT_MOST(至多)下的数据
+         */
+
+        while (widthModel < 3 || heightModel < 3) {
+            view.measure(View.MeasureSpec.makeMeasureSpec(0, (widthModel << 30)),
+                    View.MeasureSpec.makeMeasureSpec(0, (heightModel << 30)));
+            //getWidth 获取屏幕中view的宽度（跟parent有关）
+            //getMeasuredWidth 获取实际的view高度
+            wh[0] = view.getMeasuredWidth();
+            wh[1] = view.getMeasuredHeight();
+
+            if (wh[0] == 0 && widthModel < 3) {
+                widthModel += 1;
+            } else {
+                widthModel = 4;
+            }
+
+            if (wh[1] == 0 && heightModel < 3) {
+                heightModel += 1;
+            } else {
+                heightModel = 4;
+            }
+        }
+
         return wh;
     }
-
 
 }

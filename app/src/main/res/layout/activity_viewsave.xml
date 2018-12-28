@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.soullistener.viewtransfer.widget.DragView
+		xmlns:android="http://schemas.android.com/apk/res/android"
 		android:id="@+id/ll_viewsave"
-        android:orientation="vertical"
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        
-    <Button
-		    android:background="@color/colorAccent"
-		    android:text="点击我进入下个界面"
-		    android:id="@+id/textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+	
+	<Button
+			android:background="@color/colorAccent"
+			android:text="点击我进入下个界面"
+			android:id="@+id/textview"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
 	
 	<Button
 			android:text="阿斯顿撒大所"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"/>
+	<LinearLayout
+			android:layout_width="match_parent"
+	              android:layout_height="wrap_content">
 		<Button
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:text="爱仕达多"/>
+	
+	</LinearLayout>
+
 </com.soullistener.viewtransfer.widget.DragView>

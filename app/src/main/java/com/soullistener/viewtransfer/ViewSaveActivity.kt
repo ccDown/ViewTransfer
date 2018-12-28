@@ -5,9 +5,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.support.v7.app.AppCompatActivity
+import android.widget.LinearLayout
 import com.soullistener.viewtransfer.utils.ToastUtils
 import com.soullistener.viewtransfer.utils.ViewTransUtils
-import com.soullistener.viewtransfer.widget.DragView
 import kotlinx.android.synthetic.main.activity_viewsave.*
 import pub.devrel.easypermissions.EasyPermissions
 import java.io.File
@@ -42,7 +42,7 @@ class ViewSaveActivity : AppCompatActivity(), EasyPermissions.PermissionCallback
 
             val file = File(Environment.getExternalStorageDirectory(),"viewsave.txt")
 
-            val viewroot = findViewById<DragView>(R.id.ll_viewsave)
+            val viewroot = findViewById<LinearLayout>(R.id.ll_viewsave)
 
             val viewList = ViewTransUtils.rootViewToViewTreeBean(viewroot)
             val isSuccessed = ViewTransUtils.bean2File(file,viewList)
